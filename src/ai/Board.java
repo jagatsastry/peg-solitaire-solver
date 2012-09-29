@@ -23,7 +23,7 @@ public class Board {
 	
 	public static enum Hole {
 		
-		INVALID('-', -1),
+		INVALID('-', 0),
 		EMPTY('0', 0),
 		PEG('X', 1);
 		
@@ -63,17 +63,66 @@ public class Board {
 		long bitMap = 0; 
 		for(int i = 0; i < SIZE; i++) {
 			for(int j = 0; j < SIZE; j++)
-				if(m_board[i][j] != Hole.INVALID)
 					bitMap = ((bitMap<<1) | m_board[i][j].bit());
 		}
 		return bitMap;
 	}
 	
+	private List<Long> getRotateConfigs() {
+		List<Long> rotations = new ArrayList<Long>(3);
+		for(int i = 0; i < 3; i++) {
+			rotate();
+			rotations.add(bitMap());
+		}
+		rotate();
+		return rotations;
+	}
+	
+	private void rotate() {
+		for(int i = 0; i < (SIZE)/2; i++) {
+			for(int j = 0; j <= (SIZE-1)/2; j++) {
+				
+				Hole temp = m_board[i][j];
+				m_board[i][j] = m_board[SIZE-j-1][i];
+				m_board[SIZE-j-1][i] = m_board[SIZE-i-1][SIZE-j-1];
+				m_board[SIZE-i-1][SIZE-j-1] = m_board[j][SIZE-i-1];
+				m_board[j][SIZE-i-1] =temp; 
+//				
+//				Hole src = m_board[SIZE - j - 1][i];
+//				m_board[SIZE - j - 1][i] = m_board[i][j];
+//				Hole dest = m_board[SIZE - i - 1][SIZE - j - 1];
+//				m_board[SIZE - i - 1][SIZE - j - 1] = src;
+//				src = dest;
+//				dest = m_board[SIZE -j - 1][SIZE - i - 1];
+//				m_board[SIZE - j - 1][SIZE - i - 1] = src;
+//				src = dest;
+//				m_board[i][j] = src;
+//			
+				}
+		}
+	}
+	
+	private void verticalReflect() {
+		 	for(int j = 0; j < SIZE/2; j++) 
+				for(int i = 0; i < SIZE; i++){
+				Hole temp = m_board[i][j];
+				m_board[i][j] = m_board[i][SIZE - j -1];
+				m_board[i][SIZE - j - 1] = temp;
+			}
+	}
+	
 	public List<Long> getSymmetricConfigs() { 
-		//TODO: Perform rotations and reflections
-		List<Long> retVal = new ArrayList<Long>();
-		retVal.add(bitMap());
-		return retVal;
+		List<Long> configs = new ArrayList<Long>();
+		configs.add(bitMap());
+		List<Long> rotations = getRotateConfigs();
+		configs.addAll(rotations);
+		verticalReflect();
+		configs.add(bitMap());
+		List<Long> reflectRotations = getRotateConfigs();
+		configs.addAll(reflectRotations);
+		verticalReflect();
+		return configs;
+		
 //		
 //		for(int i = 0; i < SIZE; i++) 
 //			for(int j = 0; j < SIZE; j++) {

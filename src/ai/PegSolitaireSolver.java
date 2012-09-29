@@ -64,10 +64,10 @@ public class PegSolitaireSolver {
 		List<String> test = new ArrayList<String>() { 
 			private static final long serialVersionUID = 1L;
 			{add("--000--"); } 
-			{add("--0X0--"); } 
-	        {add("00XXX00"); } 
-	        {add("000X000"); }
-	        {add("000X000"); }
+			{add("--000--"); } 
+	        {add("00X0000"); } 
+	        {add("0XXXX00"); }
+	        {add("00X0000"); }
 	        {add("--000--"); }
 	        {add("--000--"); }
         }; 
@@ -101,7 +101,7 @@ public class PegSolitaireSolver {
 									m_moves.push(new Move(x, y, x + dx, y + dy));
 									return true;
 								}
-								m_unsolvableStates.add(boardCfg);
+								m_unsolvableStates.addAll(m_board.getSymmetricConfigs());
 							}
 							m_board.restore(x, y, dx, dy);
 						}
