@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-import ai.Board.Hole;
 
 /**
  * @author jagat
@@ -17,22 +16,6 @@ import ai.Board.Hole;
  */
 public class PegSolitaireSolver {
     
-	public static class Move {
-		int m_fromx, m_fromy, m_tox, m_toy;
-
-		public Move(int fromx, int fromy, int tox, int toy) {
-			super();
-			this.m_fromx = fromx;
-			this.m_fromy = fromy;
-			this.m_tox = tox;
-			this.m_toy = toy;
-		}
-
-		public void printMove() {
-			System.out.printf("Move (%d, %d) to (%d, %d)%n", m_fromx, m_fromy, m_tox, m_toy);
-		}
-	}
-	
 	private Board m_board;
 	private Set<Long> m_unsolvableStates = new HashSet<Long>();
 	private Stack<Move> m_moves = new Stack<Move>();
@@ -86,7 +69,7 @@ public class PegSolitaireSolver {
 			
 	private boolean solve() {
 		int pegCount = 0;
-		for(int x = 0; x < Board.SIZE; x++) {
+		for(int x = 0; x < Board.SIZE; x++) 
 			for(int y = 0; y < Board.SIZE; y++) {
 				if(this.m_board.get(x, y) == Hole.PEG) {
 					pegCount++; 
@@ -108,7 +91,6 @@ public class PegSolitaireSolver {
 					}
 				}
 			}
-		}
 		return pegCount == 1;
 	}
 
