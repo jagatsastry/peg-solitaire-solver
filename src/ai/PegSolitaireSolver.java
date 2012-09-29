@@ -3,9 +3,7 @@
  */
 package ai;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
@@ -23,43 +21,7 @@ public class PegSolitaireSolver {
 		m_board = board;
 	}
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		try {
-			List<List<String>> boardConfigs = getTests();
-			for(List<String> cfg: boardConfigs) {
-				Board testBoard = Board.getBoard(cfg);
-				PegSolitaireSolver solver = new PegSolitaireSolver(testBoard);
-				if(!solver.solve())
-					System.err.println("The given game instance cannot be solved");
-				else solver.printSteps();
-			}
-		    
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private static List<List<String>> getTests() {
-		List<List<String>> tests = new ArrayList<List<String>>();
-		List<String> test = new ArrayList<String>() { 
-			private static final long serialVersionUID = 1L;
-			{add("--000--"); } 
-			{add("--000--"); } 
-	        {add("00X0000"); } 
-	        {add("0XXXX00"); }
-	        {add("00X0000"); }
-	        {add("--000--"); }
-	        {add("--000--"); }
-        }; 
-		
-		tests.add(test);
-		return tests;
-	}
-
-	private void printSteps() {
+	void printSteps() {
         while(!m_moves.empty())
         	m_moves.pop().printMove();
 	}
@@ -67,7 +29,7 @@ public class PegSolitaireSolver {
 	int[][] deltas = new int[][]{{-2, 0}, {2, 0}, {0, -2}, {0, 2}};
 	
 			
-	private boolean solve() {
+	boolean solve() {
 		int pegCount = 0;
 		for(int x = 0; x < Board.SIZE; x++) 
 			for(int y = 0; y < Board.SIZE; y++) {
