@@ -17,8 +17,19 @@ public class TestPegSolver {
 	        {add("--000--"); }
 	        {add("--000--"); }
         }; 
-		
-		tests.add(test);
+        
+		List<String> test1 = new ArrayList<String>() { 
+			private static final long serialVersionUID = 1L;
+			{add("--XXX--"); } 
+			{add("--XXX--"); } 
+	        {add("XXXXXXX"); } 
+	        {add("XXX0XXX"); }
+	        {add("XXXXXXX"); }
+	        {add("--XXX--"); }
+	        {add("--XXX--"); }
+        }; 
+        
+		tests.add(test1);
 		return tests;
 	}
 
