@@ -18,6 +18,7 @@ public class PegSolitaireSolver {
     
 	private Board m_board;
 	private Set<Long> m_unsolvableStates = new HashSet<Long>();
+	private Set<Long> m_visitedStates = new HashSet<Long>();
 	private Stack<Move> m_moves = new Stack<Move>();
 	private static CostComparator cc = new CostComparator();
 	private PriorityQueue<PriorityNode> priorityQueue = new  PriorityQueue<PriorityNode>(11,cc);
@@ -76,10 +77,14 @@ public class PegSolitaireSolver {
 		//check for whether state is goal state
 		currentState=m_board;
 		while(!isGoalState(currentState) && !priorityQueue.isEmpty()){
-			noNodesVisited++;
+			System.out.println(noNodesVisited++);
 			pn=priorityQueue.poll();
 			prevStateList= pn.getStates();
 			distance = pn.getDistance();
+			Long bcf = currentState.bitMap();
+			if(m_visitedStates.contains(bcf))
+				continue;
+			m_visitedStates.addAll(currentState.getSymmetricConfigs());	
 			for(int x = 0; x < Board.SIZE; x++) 
 				for(int y = 0; y < Board.SIZE; y++){
 					if(currentState.get(x, y) == Hole.PEG){
@@ -95,7 +100,7 @@ public class PegSolitaireSolver {
 								pn.setStates(stateList);
 								pn.setDistance(++distance);
 								pn.setCost(distance + Pagoda.evaluatePagoda(m_board));
-								//--distance;
+								--distance;
 								priorityQueue.add(pn);
 							}
 						}
