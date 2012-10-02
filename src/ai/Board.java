@@ -14,6 +14,10 @@ public class Board {
 		return m_board[i][j];
 	}
 	
+	public void set(int i, int j, Hole h){
+		m_board[i][j]=h;
+	}
+	
 	@Override public String toString() {
 		StringBuilder build = new StringBuilder();
 		for(Hole[] row: m_board)
@@ -21,7 +25,7 @@ public class Board {
 		return build.toString();
 	}
 	
-	private Hole[][] m_board;
+	private Hole[][] m_board=new Hole[SIZE][SIZE];
 	
 	public long bitMap() {
 		long bitMap = 0; 
@@ -94,11 +98,17 @@ public class Board {
 //			}
 	}
 	
+
 	public static final int SIZE = 7;
 	
 	private Board(Hole[][] slots) {
 		m_board = slots;
 	}
+	
+	private Board(){
+		
+	}
+	
 	
     public static Board inputBoard() throws IOException {
 		List<String> boardList = new ArrayList<String>(7);
@@ -135,6 +145,14 @@ public class Board {
 		m_board[x + dx][y + dy] = Hole.EMPTY;
 		m_board[x + dx/2][y + dy/2] = Hole.PEG;
 		m_board[x][y] = Hole.PEG;
+	}
+	
+	public Board copyBoard(){
+		Board newBoard = new Board();
+		for(int i=0;i<SIZE;i++)
+			for(int j=0;j<SIZE;j++)
+				newBoard.set(i, j, this.get(i, j));
+		return newBoard;
 	}
 
 }
