@@ -30,10 +30,26 @@ public class Board {
 	public long bitMap() {
 		long bitMap = 0; 
 		for(int i = 0; i < SIZE; i++) {
-			for(int j = 0; j < SIZE; j++)
-					bitMap = ((bitMap<<1) | m_board[i][j].bit());
+			for(int j = 0; j < SIZE; j++) {
+					bitMap |= m_board[i][j].bit();
+					if( j != SIZE - 1 || i != SIZE - 1) bitMap <<= 1;
+			}		
 		}
 		return bitMap;
+	}
+	
+	public static Board getBoard(long bitMap) {
+		Board brd = new Board();
+		
+		for(int i = 0; i < SIZE * SIZE; i++) {
+			int idx = SIZE * SIZE - 1 - i;
+			int bit = (int)(bitMap & 1);
+			int x = idx/SIZE;
+			int y = idx%SIZE;
+			brd.m_board[x][y] = ((bit != 0)?Hole.PEG:(Board.invalidPos(x, y)?Hole.INVALID:Hole.EMPTY));
+			bitMap >>= 1;
+		}
+		return brd;	
 	}
 	
 	private List<Long> getRotateConfigs() {
@@ -153,6 +169,12 @@ public class Board {
 			for(int j=0;j<SIZE;j++)
 				newBoard.set(i, j, this.get(i, j));
 		return newBoard;
+	}
+
+	public static boolean invalidPos(int stepx, int stepy) {
+
+		return (stepx < 0 || stepx >= Board.SIZE || stepy < 0 || stepy >= Board.SIZE);
+
 	}
 
 }

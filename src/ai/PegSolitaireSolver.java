@@ -3,8 +3,9 @@
  */
 package ai;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.Stack;
@@ -20,9 +21,15 @@ public class PegSolitaireSolver {
 	private Set<Long> m_unsolvableStates = new HashSet<Long>();
 	private Set<Long> m_visitedStates = new HashSet<Long>();
 	private Stack<Move> m_moves = new Stack<Move>();
-	private static CostComparator cc = new CostComparator();
-	private PriorityQueue<PriorityNode> priorityQueue = new  PriorityQueue<PriorityNode>(11,cc);
-	public static int numMoves=0;
+	private static CostComparator m_cc = new CostComparator();
+	private PriorityQueue<PriorityNode> m_priorityQueue = new  PriorityQueue<PriorityNode>(11,m_cc);
+	public int m_numMoves=0;
+	
+	private Heuristic m_heuristic = Heuristic.PAGODA;
+	public int getNumMoves() {
+		return m_numMoves;
+	}
+
 	public PegSolitaireSolver(Board board) {
 		m_board = board;
 	}
@@ -36,7 +43,6 @@ public class PegSolitaireSolver {
 	
 			
 	boolean solve() {
-		numMoves++;
 		int pegCount = 0;
 		for(int x = 0; x < Board.SIZE; x++) 
 			for(int y = 0; y < Board.SIZE; y++) {
@@ -47,6 +53,8 @@ public class PegSolitaireSolver {
 						int dy = delta[1];
 						if(validMove(x, y, dx, dy)) {
 							m_board.move(x, y, dx, dy);
+							m_numMoves++;
+							
 							Long boardCfg = m_board.bitMap();
 							if(!m_unsolvableStates.contains(boardCfg)) {
 								if(solve()) {
@@ -63,62 +71,97 @@ public class PegSolitaireSolver {
 		return pegCount == 1;
 	}
 	
+	public static enum Heuristic { PAGODA, CENTRIC};
+	
+	private int getCost() {
+		switch(m_heuristic) {
+		case PAGODA:
+			return Pagoda.evaluatePagoda(m_board);
+		case CENTRIC:
+			return 0; //TODO
+		}
+		return 0;
+	}
+	
 	int aStar(){
 		int noNodesVisited=0;
 		int distance=0;
-		PriorityNode pn = new PriorityNode();
-		LinkedList<Board> stateList = new LinkedList<Board>();
-		LinkedList<Board> prevStateList;
+		PriorityNode root = new PriorityNode();
 		Board currentState;
-		pn.setCost(Pagoda.evaluatePagoda(m_board));
-		stateList.add(m_board);
-		pn.setStates(stateList);
-		priorityQueue.add(pn);
+		root.setCost(getCost());
+		root.setState(m_board.bitMap());
+		root.setPrevState(-1);
+		m_priorityQueue.add(root);
 		//check for whether state is goal state
 		currentState=m_board;
-		while(!isGoalState(currentState) && !priorityQueue.isEmpty()){
+		while(!isGoalState(currentState) && !m_priorityQueue.isEmpty()){
 			System.out.println(noNodesVisited++);
-			pn=priorityQueue.poll();
-			prevStateList= pn.getStates();
-			distance = pn.getDistance();
-			Long bcf = currentState.bitMap();
-			if(m_visitedStates.contains(bcf))
-				continue;
-			m_visitedStates.addAll(currentState.getSymmetricConfigs());	
-			for(int x = 0; x < Board.SIZE; x++) 
-				for(int y = 0; y < Board.SIZE; y++){
-					if(currentState.get(x, y) == Hole.PEG){
-						for(int[] delta: deltas) {
+			long curStateBmp = m_priorityQueue.peek().getState();
+			currentState = Board.getBoard(curStateBmp);
+			PriorityNode curNode = m_priorityQueue.poll();
+			distance = curNode.getDistance();
+//			Long bcf = currentState.bitMap();
+//			m_visitedStates.addAll(currentState.getSymmetricConfigs());	
+//			if(m_visitedStates.contains(currentState.bitMap()))
+//				continue;
+			int[] iterOrder = new int[Board.SIZE];
+			int[] deltaOrder = new int[4];
+			int idx = 0;
+			for(int i = 0; i<Board.SIZE; i++) 
+				iterOrder[i] = idx++;
+			
+			idx = 0;
+			for(int i = 0; i<4; i++) 
+				deltaOrder[i] = idx++;
+			
+			Collections.shuffle(Arrays.asList(iterOrder));
+			Collections.shuffle(Arrays.asList(deltaOrder));
+			for(int x: iterOrder) 
+				for(int y: iterOrder){
+					if(currentState.get(x, y) == Hole.PEG){	
+						for(int index: deltaOrder) {
 							m_board= currentState.copyBoard();
-							int dx = delta[0];
-							int dy = delta[1];
+							int dx = deltas[index][0];
+							int dy = deltas[index][1];
 							if(validMove(x, y, dx, dy)){
 								m_board.move(x, y, dx, dy);
-								pn=new PriorityNode();
-								stateList = new LinkedList<Board>(prevStateList);
-								stateList.addFirst(m_board);
-								pn.setStates(stateList);
+								
+								Long boardSt = m_board.bitMap();
+								if(m_visitedStates.contains(boardSt))
+									continue;
+								m_visitedStates.addAll(m_board.getSymmetricConfigs());
+								
+								
+								PriorityNode pn=new PriorityNode();
+								pn.setState(boardSt);
+								pn.setPrevState(curStateBmp);
 								pn.setDistance(++distance);
-								pn.setCost(distance + Pagoda.evaluatePagoda(m_board));
+								
+								pn.setCost(getCost());
 								--distance;
-								priorityQueue.add(pn);
+								m_priorityQueue.add(pn);
+								
 							}
 						}
 					}
 				}
-			if(null!=priorityQueue && !priorityQueue.isEmpty())
-				currentState = priorityQueue.peek().getStates().peek();
+			if(!m_priorityQueue.isEmpty())
+				currentState = Board.getBoard(m_priorityQueue.peek().getState());
+//			long curStateBmp = m_priorityQueue.peek().getState();
+//			currentState = Board.getBoard(curStateBmp);
+			
 		}
+		if(isGoalState(currentState) && !m_priorityQueue.isEmpty())
+			System.out.println(m_priorityQueue.poll());
 		return noNodesVisited;
 	}
 
 	private boolean validMove(int x, int y, int dx, int dy) {
 		int stepx = x + dx/2, stepy = y + dy/2,
 				jumpx = x + dx, jumpy = y + dy;
-		if(stepx < 0 || stepx >= Board.SIZE || stepy < 0 || stepy >= Board.SIZE 
-				|| jumpx < 0 || jumpx >= Board.SIZE || jumpy < 0 || jumpy >= Board.SIZE)
+		if(Board.invalidPos(stepx, stepy) || Board.invalidPos(jumpx, jumpy))
 			return false;
-
+		
 		Hole intHole = m_board.get(stepx,  stepy);
         Hole destHole = m_board.get(jumpx, jumpy);
         if(intHole == Hole.INVALID || intHole == Hole.EMPTY || 

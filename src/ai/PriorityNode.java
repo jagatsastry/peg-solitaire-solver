@@ -1,13 +1,18 @@
 package ai;
 
-import java.util.LinkedList;
-
-
 public class PriorityNode {
 
 		private int cost;
 		private int distance;
-		private LinkedList<Board> states;
+		
+		@Override
+		public String toString() {
+			return "PriorityNode [cost=" + cost + ", distance=" + distance
+					+ ", state=" + Board.getBoard(state) + "]";
+		}
+		
+		private long state;
+		private long m_prevState;
 		
 		
 		public int getCost() {
@@ -16,12 +21,23 @@ public class PriorityNode {
 		public void setCost(int cost) {
 			this.cost = cost;
 		}
-		public LinkedList<Board> getStates() {
-			return states;
+		
+		public long getState() {
+			return state; //states;
 		}
-		public void setStates(LinkedList<Board> states) {
-			this.states = states;
+
+		public void setState(long state) {
+			this.state = state;
 		}
+
+		public long getPrevState() {
+			return m_prevState; //states;
+		}
+		
+		public void setPrevState(long m_prevState) {
+			this.m_prevState = m_prevState;
+		}
+
 		public int getDistance() {
 			return distance;
 		}
