@@ -149,7 +149,11 @@ public class Board {
 		}
 		return new Board(arrayBoard);
 	}
-
+    
+    public void move(Move movement) {
+    	move(movement.fromx(), movement.fromy(), movement.dx(), movement.dy());
+    }
+    
 	//Assumption: The move has been verified as valid
 	public void move(int x, int y, int dx, int dy) {
 		m_board[x][y] = Hole.EMPTY;
@@ -172,9 +176,9 @@ public class Board {
 	}
 
 	public static boolean invalidPos(int stepx, int stepy) {
-
-		return (stepx < 0 || stepx >= Board.SIZE || stepy < 0 || stepy >= Board.SIZE);
-
+		return (stepx < 0 || stepx >= Board.SIZE || stepy < 0 || stepy >= Board.SIZE)
+				|| ((stepx < 2 && stepy < 2) || (stepx < 2 && stepy > 4) 
+				  ||(stepx > 4 && stepy < 2) || (stepx > 4 && stepy > 4));
 	}
-
+	
 }

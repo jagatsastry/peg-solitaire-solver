@@ -5,7 +5,9 @@ package ai;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.Stack;
@@ -17,9 +19,10 @@ import java.util.Stack;
  */
 public class PegSolitaireSolver {
     
+	private Board m_origBoard;
 	private Board m_board;
 	private Set<Long> m_unsolvableStates = new HashSet<Long>();
-	private Set<Long> m_visitedStates = new HashSet<Long>();
+	private Map<Long, Long> m_visitedStates = new HashMap<Long, Long>();
 	private Stack<Move> m_moves = new Stack<Move>();
 	private static CostComparator m_cc = new CostComparator();
 	private PriorityQueue<PriorityNode> m_priorityQueue = new  PriorityQueue<PriorityNode>(11,m_cc);
@@ -32,11 +35,18 @@ public class PegSolitaireSolver {
 
 	public PegSolitaireSolver(Board board) {
 		m_board = board;
+		m_origBoard = m_board.copyBoard();
 	}
 
 	void printSteps() {
-        while(!m_moves.empty())
-        	m_moves.pop().printMove();
+		Board cpy = m_origBoard.copyBoard();
+		System.out.println(cpy);
+        while(!m_moves.empty()) {
+        	Move mv = m_moves.pop();
+        	mv.printMove();
+        	cpy.move(mv);
+        	System.out.println(cpy);
+        }
 	}
     
 	int[][] deltas = new int[][]{{-2, 0}, {2, 0}, {0, -2}, {0, 2}};
@@ -78,6 +88,7 @@ public class PegSolitaireSolver {
 		case PAGODA:
 			return Pagoda.evaluatePagoda(m_board);
 		case CENTRIC:
+			
 			return 0; //TODO
 		}
 		return 0;
@@ -87,13 +98,17 @@ public class PegSolitaireSolver {
 		int noNodesVisited=0;
 		int distance=0;
 		PriorityNode root = new PriorityNode();
-		Board currentState;
 		root.setCost(getCost());
 		root.setState(m_board.bitMap());
 		root.setPrevState(-1);
 		m_priorityQueue.add(root);
 		//check for whether state is goal state
-		currentState=m_board;
+		Board currentState=m_board;
+		
+		//m_visitedStates.put(m_board.bitMap(), (long)-1);
+		for(Long st: m_board.getSymmetricConfigs()) 
+			m_visitedStates.put(st, (long)-1);
+
 		while(!isGoalState(currentState) && !m_priorityQueue.isEmpty()){
 			System.out.println(noNodesVisited++);
 			long curStateBmp = m_priorityQueue.peek().getState();
@@ -127,9 +142,11 @@ public class PegSolitaireSolver {
 								m_board.move(x, y, dx, dy);
 								
 								Long boardSt = m_board.bitMap();
-								if(m_visitedStates.contains(boardSt))
+								if(m_visitedStates.get(boardSt) != null)
 									continue;
-								m_visitedStates.addAll(m_board.getSymmetricConfigs());
+								m_visitedStates.put(boardSt, curStateBmp);
+								for(Long st: m_board.getSymmetricConfigs()) 
+									m_visitedStates.put(st, curStateBmp);
 								
 								
 								PriorityNode pn=new PriorityNode();
@@ -149,13 +166,26 @@ public class PegSolitaireSolver {
 				currentState = Board.getBoard(m_priorityQueue.peek().getState());
 //			long curStateBmp = m_priorityQueue.peek().getState();
 //			currentState = Board.getBoard(curStateBmp);
-			
 		}
-		if(isGoalState(currentState) && !m_priorityQueue.isEmpty())
-			System.out.println(m_priorityQueue.poll());
+		if(isGoalState(currentState) && !m_priorityQueue.isEmpty()) {
+			long st = currentState.bitMap();
+			while(st != -1) {
+				m_moveSeq.add(Board.getBoard(st));
+				st = this.m_visitedStates.get(st);
+			}
+			//System.out.println(m_priorityQueue.poll());
+		}
 		return noNodesVisited;
 	}
-
+    
+	private Stack<Board> m_moveSeq = new Stack<Board>();
+	public void printMoveSeq() {
+		while(!m_moveSeq.empty()) {
+			System.out.println(m_moveSeq.pop());
+			System.out.println();
+		}
+	}
+	
 	private boolean validMove(int x, int y, int dx, int dy) {
 		int stepx = x + dx/2, stepy = y + dy/2,
 				jumpx = x + dx, jumpy = y + dy;

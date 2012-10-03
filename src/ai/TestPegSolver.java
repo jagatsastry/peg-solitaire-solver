@@ -48,13 +48,14 @@ public class TestPegSolver {
 				PegSolitaireSolver solver = new PegSolitaireSolver(testBoard);
 				if(!solver.solve())
 					System.err.println("The given game instance cannot be solved");
-				else {
-					solver.printSteps();
-				}
-				System.out.println("Number of moves:  " + solver.getNumMoves());
+//				else {
+//					solver.printSteps();
+//				}
+//				System.out.println("Number of moves:  " + solver.getNumMoves());
 				testBoard = Board.getBoard(cfg);
 				solver = new PegSolitaireSolver(testBoard);
 				System.out.println("A star moves"+solver.aStar());
+				solver.printMoveSeq();
 				
 				//System.err.println("The given game instance cannot be solved");
 				//else print steps
