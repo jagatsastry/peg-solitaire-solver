@@ -2,10 +2,14 @@ package ai;
 
 public class Pagoda {
 
-	private static int pagodaFunction[][] = { { 0, 0, 1, 0, 1, 0, 0 },
-			{ 0, 0, 0, 0, 0, 0, 0 }, { 1, 0, 1, 0, 1, 0, 1 },
-			{ 0, 0, 0, 0, 0, 0, 0 }, {  1, 0, 1, 0, 1, 0, 1 },
-			{ 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 1, 0, 0 } };
+	private static int pagodaFunction[][] = 
+		{ { 0, 0, 1, 0, 1, 0, 0 },
+		  { 0, 0, 0, 0, 0, 0, 0 }, 
+		  { 1, 0, 1, 0, 1, 0, 1 },
+		  { 0, 0, 0, 0, 0, 0, 0 }, 
+		  { 1, 0, 1, 0, 1, 0, 1 },
+		  { 0, 0, 0, 0, 0, 0, 0 }, 
+		  { 0, 0, 1, 0, 1, 0, 0 } };
 
 	public static int evaluatePagoda(Board board) {
 		int pagodaValue = 0;

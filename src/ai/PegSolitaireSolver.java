@@ -202,6 +202,8 @@ public class PegSolitaireSolver {
 	
 	private boolean isGoalState(Board state){
 		int pegCount=0;
+		if(state.get(3, 3) != Hole.PEG)
+			return false;
 		for(int i=0;i<Board.SIZE;i++)
 			for(int j=0;j<Board.SIZE;j++)
 				if(state.get(i, j)==Hole.PEG)
