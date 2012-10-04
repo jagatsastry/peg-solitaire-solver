@@ -1,9 +1,30 @@
 package ai;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PriorityNode {
+        
+	    private List<Integer> pagodas = new ArrayList<Integer>(Pagoda.NUM_PAGODAS);
+	    
+		List<Integer> getPagodas() {
+			return pagodas;
+		}
+		void setPagodas(List<Integer> pagodas) {
+			this.pagodas = pagodas;
+		}
 
 		private int cost;
 		private int distance;
+		private Move m_move;
+		
+		public Move getMove() {
+			return m_move;
+		}
+		
+		public void setMove(Move mv) {
+			m_move = mv;
+		}
 		
 		@Override
 		public String toString() {

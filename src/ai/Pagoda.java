@@ -1,26 +1,87 @@
 package ai;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Pagoda {
 
-	private static int pagodaFunction[][] = 
-		{ { 0, 0, 1, 0, 1, 0, 0 },
-		  { 0, 0, 0, 0, 0, 0, 0 }, 
-		  { 1, 0, 1, 0, 1, 0, 1 },
-		  { 0, 0, 0, 0, 0, 0, 0 }, 
-		  { 1, 0, 1, 0, 1, 0, 1 },
-		  { 0, 0, 0, 0, 0, 0, 0 }, 
-		  { 0, 0, 1, 0, 1, 0, 0 } };
+	public static final int NUM_PAGODAS = 6;
+	private static List<int[][]> pagodaFunctions = new ArrayList<int[][]>() {
+		
+		{add( new int[][]{ 
+				  { 0,  0, 0, 0, 0, 0,  0 },
+				  { 0,  0, 0, 1, 0, 0,  0 }, 
+				  { -1, 1, 0, 1, 0, 1, -1 },
+				  { 0,  0, 0, 0, 0, 0,  0 }, 
+				  { -1, 1, 0, 1, 0, 1, -1 },
+				  { 0,  0, 0, 1, 0, 0,  0 }, 
+				  { 0,  0, 0, 0, 0, 0,  0 }}); } 
+		
+
+	   { add( new int[][]{ 
+			  { 0, 0, 1, 0, 1, 0, 0 },
+			  { 0, 0, 0, 0, 0, 0, 0 }, 
+			  { 1, 0, 1, 0, 1, 0, 1 },
+			  { 0, 0, 0, 0, 0, 0, 0 }, 
+			  { 1, 0, 1, 0, 1, 0, 1 },
+			  { 0, 0, 0, 0, 0, 0, 0 }, 
+			  { 0, 0, 1, 0, 1, 0, 0 }}); }
+
+		{add( new int[][]{ 
+				  { 0, 0, 0, 1, 0, 0, 0 },
+				  { 0, 0, 0, 0, 0, 0, 0 }, 
+				  { 0, 1, 0, 1, 0, 1, 0 },
+				  { 0, 0, 0, 0, 0, 0, 0 }, 
+				  { 0, 1, 0, 1, 0, 1, 0 },
+				  { 0, 0, 0, 0, 0, 0, 0 }, 
+				  { 0, 0, 0, 1, 0, 0, 0 }}); } 
+		
+		{add( new int[][]{ 
+				  { 0, 0, -1, 0, -1, 0, 0 },
+				  { 0, 0,  1, 0, 1, 0, 0 }, 
+				  { 0, 0, 0, 0, 0, 0, 0 },
+				  { 0, 1, 1, 0, 1, 1, 0 }, 
+				  { 0, 0, 0, 0, 0, 0, 0 },
+				  { 0, 0, 1, 0, 1, 0, 0 }, 
+				  { 0, 0, -1, 0, -1, 0, 0 }}); } 
+		
+
+		{add( new int[][]{ 
+			  { 0, 0, 0, 0, 0, 0, 0 },
+			  { 0, 0, 0, 1, 0, 0, 0 }, 
+			  { 0, 0, 0, 0, 0, 0, 0 },
+			  { 0, 1, 0, 1, 0, 1, 0 }, 
+			  { 0, 0, 0, 0, 0, 0, 0 },
+			  { 0, 0, 0, 1, 0, 0, 0 }, 
+			  { 0, 0, 0, 0, 0, 0, 0 }}); } 
+
+	
+		{add( new int[][]{ 
+				  { 0,  0, 0, 0, 0, 0,  0 },
+				  { 0,  0, 1, 0, 1, 0,  0 }, 
+				  { 0,  0, 0, 0, 0, 0,  0 },
+				  { 1,  0, 1, 0, 1, 0,  1 }, 
+				  { 0,  0, 0, 0, 0, 0,  0 },
+				  { 0,  0, 1, 0, 1, 0,  0 }, 
+				  { 0,  0, 0, 0, 0, 0,  0 }}); } 
+		
+	};
+
+	public static List<Integer> evaluatePagodas(Board board) {
+		List<Integer> pagodas = new ArrayList<Integer>();
+		for(int k = 0; k < pagodaFunctions.size(); k++) {
+			
+			pagodas.add(evaluatePagoda(board, k));
+		}
+		return pagodas;
+	}
+	
+	private static int evaluatePagoda(Board board, int idx) {
+		return Heuristics.evaluateCostMatrix(board, pagodaFunctions.get(idx));
+	}
 
 	public static int evaluatePagoda(Board board) {
-		int pagodaValue = 0;
-		for (int i = 0; i < Board.SIZE; i++) {
-			for (int j = 0; j < Board.SIZE; j++) {
-				if (board.get(i, j) == Hole.PEG) {
-					pagodaValue += pagodaFunction[i][j];
-				}
-			}
-		}
-		return pagodaValue;
+		return evaluatePagodas(board).get(1);
 	}
 	
 	public static int evaluateHeutristic(int x,int y,int dx,int dy){
@@ -39,23 +100,6 @@ public class Pagoda {
 			value+=1;
 		return value; 
 	}
-	
-	/*public static int evaluateHeutristic(Board b){
-		
-		int value=0;
-		int manDistance=0;
-		for (int i = 0; i < Board.SIZE; i++) {
-			for (int j = 0; j < Board.SIZE; j++) {
-				if(b.get(i, j) == Hole.PEG){
-					manDistance=Math.abs(i-3)+Math.abs(j-3);
-					value+=manDistance;
-				}
-			}
-		}
-		return value;
-			
-		
-	}*/
 	
 	
 

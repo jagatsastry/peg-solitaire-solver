@@ -38,6 +38,7 @@ public class Board {
 		return bitMap;
 	}
 	
+	
 	public static Board getBoard(long bitMap) {
 		Board brd = new Board();
 		

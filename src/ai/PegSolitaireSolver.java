@@ -3,10 +3,12 @@
  */
 package ai;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
@@ -28,7 +30,7 @@ public class PegSolitaireSolver {
 	private PriorityQueue<PriorityNode> m_priorityQueue = new  PriorityQueue<PriorityNode>(11,m_cc);
 	public int m_numMoves=0;
 	
-	private Heuristic m_heuristic = Heuristic.PAGODA;
+	private Heuristic m_heuristic = Heuristic.WEIGHTED_COST;
 	public int getNumMoves() {
 		return m_numMoves;
 	}
@@ -54,11 +56,26 @@ public class PegSolitaireSolver {
 			
 	boolean solve() {
 		int pegCount = 0;
-		for(int x = 0; x < Board.SIZE; x++) 
-			for(int y = 0; y < Board.SIZE; y++) {
+		
+		List<Integer> iterOrder = new ArrayList<Integer>(Board.SIZE);
+		List<Integer> deltaOrder = new ArrayList<Integer>(4); //new int[4];
+		int idx = 0;
+		for(int i = 0; i<Board.SIZE; i++) 
+			iterOrder.add(idx++);
+		
+		idx = 0;
+		for(int i = 0; i<4; i++) 
+			deltaOrder.add(idx++);
+		
+//		Collections.shuffle(iterOrder);
+//		Collections.shuffle(deltaOrder);
+
+		for(int x: iterOrder) 
+			for(int y: iterOrder) {
 				if(this.m_board.get(x, y) == Hole.PEG) {
 					pegCount++; 
-					for(int[] delta: deltas) {
+					for(int index: deltaOrder) {
+						int[] delta = deltas[index];
 						int dx = delta[0];
 						int dy = delta[1];
 						if(validMove(x, y, dx, dy)) {
@@ -78,18 +95,21 @@ public class PegSolitaireSolver {
 					}
 				}
 			}
-		return pegCount == 1;
+		return isGoalState(m_board);
 	}
 	
-	public static enum Heuristic { PAGODA, CENTRIC};
+	public static enum Heuristic { PAGODA, MANHATTAN, WEIGHTED_COST};
 	
 	private int getCost() {
 		switch(m_heuristic) {
 		case PAGODA:
 			return Pagoda.evaluatePagoda(m_board);
-		case CENTRIC:
-			
-			return 0; //TODO
+		case MANHATTAN:
+			return Heuristics.manhattanCost(m_board);
+			//return 0; //TODO
+		case WEIGHTED_COST:
+			return Heuristics.weightedCost(m_board);
+		//case 
 		}
 		return 0;
 	}
@@ -108,7 +128,10 @@ public class PegSolitaireSolver {
 		//m_visitedStates.put(m_board.bitMap(), (long)-1);
 		for(Long st: m_board.getSymmetricConfigs()) 
 			m_visitedStates.put(st, (long)-1);
-
+        
+		int prevX = 0; //(Board.SIZE - 1)/2;
+		int prevY = 0; //(Board.SIZE - 1)/2;
+		root.setMove(new Move(prevX, prevY, prevX, prevY));
 		while(!isGoalState(currentState) && !m_priorityQueue.isEmpty()){
 			System.out.println(noNodesVisited++);
 			long curStateBmp = m_priorityQueue.peek().getState();
@@ -119,27 +142,35 @@ public class PegSolitaireSolver {
 //			m_visitedStates.addAll(currentState.getSymmetricConfigs());	
 //			if(m_visitedStates.contains(currentState.bitMap()))
 //				continue;
-			int[] iterOrder = new int[Board.SIZE];
-			int[] deltaOrder = new int[4];
-			int idx = 0;
+			List<Integer> xOrder = new ArrayList<Integer>(Board.SIZE);
+			List<Integer> yOrder = new ArrayList<Integer>(Board.SIZE);
+			List<Integer> deltaOrder = new ArrayList<Integer>(4); //new int[4];
+			int idxx = prevX; 
+			//int idxx = curNode.getMove().tox();
 			for(int i = 0; i<Board.SIZE; i++) 
-				iterOrder[i] = idx++;
+				xOrder.add(idxx++%Board.SIZE);
+
+			int idxy = prevY; 
+			//int idxy = curNode.getMove().toy();
+			for(int i = 0; i<Board.SIZE; i++) 
+				yOrder.add(idxy++%Board.SIZE);
 			
-			idx = 0;
+			int idx = 0;
 			for(int i = 0; i<4; i++) 
-				deltaOrder[i] = idx++;
+				deltaOrder.add(idx++);
 			
-			Collections.shuffle(Arrays.asList(iterOrder));
-			Collections.shuffle(Arrays.asList(deltaOrder));
-			for(int x: iterOrder) 
-				for(int y: iterOrder){
+//			Collections.shuffle(iterOrder);
+//			Collections.shuffle(deltaOrder);
+			for(int x: xOrder) 
+				for(int y: yOrder){
 					if(currentState.get(x, y) == Hole.PEG){	
 						for(int index: deltaOrder) {
 							m_board= currentState.copyBoard();
 							int dx = deltas[index][0];
 							int dy = deltas[index][1];
 							if(validMove(x, y, dx, dy)){
-								m_board.move(x, y, dx, dy);
+								Move mv = new Move(x, y, x + dx, y + dy);
+								m_board.move(mv);
 								
 								Long boardSt = m_board.bitMap();
 								if(m_visitedStates.get(boardSt) != null)
@@ -148,13 +179,20 @@ public class PegSolitaireSolver {
 								for(Long st: m_board.getSymmetricConfigs()) 
 									m_visitedStates.put(st, curStateBmp);
 								
+//								List<Integer> pagodas = Pagoda.evaluatePagodas(m_board);
+//								if(pagodas.get(0) < 0 || pagodas.get(4) < 1) {
+//									System.out.println("Pagoda alert!!!");
+//									continue;
+//								}
+
+								int pgCost = getCost();
 								
 								PriorityNode pn=new PriorityNode();
 								pn.setState(boardSt);
 								pn.setPrevState(curStateBmp);
 								pn.setDistance(++distance);
-								
-								pn.setCost(getCost());
+								pn.setMove(mv);
+								pn.setCost(pgCost);
 								--distance;
 								m_priorityQueue.add(pn);
 								

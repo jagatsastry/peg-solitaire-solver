@@ -1,7 +1,7 @@
 package ai;
 
 public class Move {
-	int m_fromx, m_fromy, m_tox, m_toy;
+	int m_fromx, m_fromy, m_tox, m_toy; 
 
 	public Move(int fromx, int fromy, int tox, int toy) {
 		super();

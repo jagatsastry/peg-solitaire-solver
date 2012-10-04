@@ -6,7 +6,7 @@ public enum Hole {
 	EMPTY('0', 0),
 	PEG('X', 1);
 	
-	private char m_inpchar;
+	private char m_inpchar; 
 	private int m_bit;
 	
 	private Hole(char inpchar, int bit) {
