@@ -5,11 +5,27 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class Board {
     
+	private static final Map<Integer, Integer> s_posIndex = new HashMap<Integer, Integer>();
+	
+	static {
+		int idx = 0;
+		for(int i = 0; i < Board.SIZE; i++) 
+			for(int j = 0; j < Board.SIZE; j++)
+				if(!invalidPos(i, j))
+					s_posIndex.put(i*Board.SIZE + j, idx++);
+	}
+	
+	public static int getPosIndex(int x, int y) {
+		return s_posIndex.get(x*Board.SIZE + y);
+	}
+	
 	public Hole get(int i, int j) {
 		return m_board[i][j];
 	}
@@ -72,17 +88,6 @@ public class Board {
 				m_board[SIZE-j-1][i] = m_board[SIZE-i-1][SIZE-j-1];
 				m_board[SIZE-i-1][SIZE-j-1] = m_board[j][SIZE-i-1];
 				m_board[j][SIZE-i-1] =temp; 
-//				
-//				Hole src = m_board[SIZE - j - 1][i];
-//				m_board[SIZE - j - 1][i] = m_board[i][j];
-//				Hole dest = m_board[SIZE - i - 1][SIZE - j - 1];
-//				m_board[SIZE - i - 1][SIZE - j - 1] = src;
-//				src = dest;
-//				dest = m_board[SIZE -j - 1][SIZE - i - 1];
-//				m_board[SIZE - j - 1][SIZE - i - 1] = src;
-//				src = dest;
-//				m_board[i][j] = src;
-//			
 				}
 		}
 	}
@@ -181,5 +186,5 @@ public class Board {
 				|| ((stepx < 2 && stepy < 2) || (stepx < 2 && stepy > 4) 
 				  ||(stepx > 4 && stepy < 2) || (stepx > 4 && stepy > 4));
 	}
-	
+
 }

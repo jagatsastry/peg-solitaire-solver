@@ -8,6 +8,9 @@ public class Pagoda {
 	public static final int NUM_PAGODAS = 6;
 	private static List<int[][]> pagodaFunctions = new ArrayList<int[][]>() {
 		
+		private static final long serialVersionUID = 1L;
+
+
 		{add( new int[][]{ 
 				  { 0,  0, 0, 0, 0, 0,  0 },
 				  { 0,  0, 0, 1, 0, 0,  0 }, 
@@ -88,8 +91,8 @@ public class Pagoda {
 		
 		int value=0;
 		
-		if(x<=2 && dx-x>0 && dy==0)
-			value+=2;
+		if(x<=2 && dx == 2 && dy==0)
+			value = 2;
 		else if(x>4 && x-dx>0 && dy==0)
 			value+=2;
 		else if(y<=2 && dy-y>0 && dx==0)

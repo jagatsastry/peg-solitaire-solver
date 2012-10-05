@@ -1,8 +1,17 @@
 package ai;
 
+import java.text.MessageFormat;
+import java.util.Formatter;
+
 public class Move {
 	int m_fromx, m_fromy, m_tox, m_toy; 
-
+	
+    @Override public String toString() {
+    	return MessageFormat.format("{0}({1}, {2}) -> {3}({4}, {5})", 
+    			Board.getPosIndex(m_fromx, m_fromy), m_fromx, m_fromy,
+    			Board.getPosIndex(m_tox, m_toy), m_tox, m_toy);
+    }
+    
 	public Move(int fromx, int fromy, int tox, int toy) {
 		super();
 		this.m_fromx = fromx;
@@ -36,6 +45,9 @@ public class Move {
 	}
 
 	public void printMove() {
-		System.out.printf("Move (%d, %d) to (%d, %d)%n", m_fromx, m_fromy, m_tox, m_toy);
+		System.out.println(this.toString());
+	//	System.out.printf("Move (%d, %d) to (%d, %d)%n", m_fromx, m_fromy, m_tox, m_toy);
 	}
+	
+	
 }
