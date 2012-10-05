@@ -18,8 +18,9 @@ import java.util.Stack;
 
 
 /**
- * @author jagat
- *
+ * Contains the DFS and A* algorithm. Also contains other utility methods. For
+ * details on how the algorithm is implemented refer report.
+ * 
  */
 public class PegSolitaireSolver {
     private static final boolean RANDOMIZE_DFS = false;

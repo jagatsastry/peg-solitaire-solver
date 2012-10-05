@@ -1,5 +1,10 @@
 package ai;
 
+/**
+ * Contains the heuristic definitions used by A* algorithm
+ * 
+ * 
+ */
 public class Heuristics {
 
 	public static int manhattanCost(Board b){

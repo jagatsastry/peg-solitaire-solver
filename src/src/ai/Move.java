@@ -2,7 +2,9 @@ package ai;
 
 import java.text.MessageFormat;
 import java.util.Formatter;
-
+/**
+ * Used to store a jump on the board.
+ */
 public class Move {
 	int m_fromx, m_fromy, m_tox, m_toy; 
 	

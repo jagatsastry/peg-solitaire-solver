@@ -8,7 +8,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * 
+ * Represents a peg-solitaire board and utility methods.
+ *
+ */
 
 public class Board {
     

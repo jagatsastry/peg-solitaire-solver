@@ -2,7 +2,11 @@ package ai;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * 
+ * Contains the definitions of the Pagoda fucntions used for pruning
+ *
+ */
 public class Pagoda {
 
 	public static final int NUM_PAGODAS = 6;

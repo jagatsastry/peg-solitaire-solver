@@ -9,6 +9,12 @@ import java.util.List;
 
 import ai.PegSolitaireSolver.Heuristic;
 
+/**
+ * Gets test cases from file and evaluates whether board can be solved using DFS
+ * and A* algorithm. Prints statistical summary of the results obtained.
+ * 
+ * 
+ */
 public class TestPegSolver {
 
 	static List<List<String>> getTests(File inputFile) throws IOException {
@@ -19,6 +25,7 @@ public class TestPegSolver {
 		List<String> test1 = null;
 		int idx = 0;
         while((line = in.readLine()) != null) {
+        	if(line.trim().equals("")) continue;
         	 if(idx++%Board.SIZE == 0) {
         		 test1 = new ArrayList<String>();
         		 tests.add(test1);

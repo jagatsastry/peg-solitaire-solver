@@ -1,5 +1,9 @@
 package ai;
-
+/**
+ * 
+ * Signifies a hole on the board
+ *
+ */
 public enum Hole {
 	
 	INVALID('-', 0),
